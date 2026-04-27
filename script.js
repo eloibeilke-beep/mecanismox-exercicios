@@ -922,7 +922,7 @@ function selecionarAberrancia(value) {
 }
 
 // ================= ENVIAR MENSAGEM =================
-function enviarMensagem() {
+async function enviarMensagem() {
   const selectPacientes = document.getElementById("pacientes");
   if (selectPacientes.value === "") return alert("Selecione o paciente");
 
@@ -931,22 +931,29 @@ function enviarMensagem() {
 
   if (!mensagem) return alert("Digite uma mensagem");
 
-  // Registro comercial de envio
-  _supabase
-    .from("logs_envios")
-    .insert([
+  const btn = document.querySelector("button[onclick='enviarMensagem()']");
+  const textoOriginal = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "⏳ Enviando...";
+
+  try {
+    // Registro comercial de envio
+    await _supabase.from("logs_envios").insert([
       {
         paciente_id: paciente.id,
         tipo_mensagem: "texto",
         status: "enviado_manual",
       },
-    ])
-    .then();
+    ]);
 
-  // Usamos um nome de janela ("wa_window") para evitar abrir várias abas
-  // e não interromper o script da página principal
-  const url = `whatsapp://send?phone=${paciente.numero}&text=${encodeURIComponent(mensagem)}`;
-  window.open(url, "wa_window");
+    const url = `whatsapp://send?phone=${paciente.numero}&text=${encodeURIComponent(mensagem)}`;
+    window.open(url, "wa_window");
+  } catch (err) {
+    console.error("Erro ao enviar mensagem:", err);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = textoOriginal;
+  }
 }
 
 // ================= ENVIAR VIDEOS =================
