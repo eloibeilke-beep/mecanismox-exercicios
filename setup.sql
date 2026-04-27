@@ -28,6 +28,13 @@ CREATE TABLE IF NOT EXISTS configuracoes_venda (
   created_at timestamptz default now() not null
 );
 
+-- Habilitar RLS e permitir acesso para a tabela de configurações
+ALTER TABLE configuracoes_venda ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Acesso total configuracoes" ON configuracoes_venda FOR ALL USING (true);
+
+-- Inserir uma linha inicial para evitar erro 406 ao buscar .single()
+INSERT INTO configuracoes_venda (gateway_url) VALUES (NULL) ON CONFLICT DO NOTHING;
+
 -- Tabela de Logs (Ajustada para bater com o nome usado no script.js)
 CREATE TABLE IF NOT EXISTS logs_envios (
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,

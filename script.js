@@ -65,14 +65,23 @@ async function mostrarTemporizador(ms) {
 
   container.style.display = "block";
   container.classList.add("timer-fixo");
+
+  // Ajustes de dimensões para garantir que o texto caiba perfeitamente
+  container.style.width = "190px";
+  container.style.height = "36px";
+  container.style.lineHeight = "36px";
+  container.style.padding = "10px";
+  container.style.fontSize = "12px";
+  container.style.textAlign = "center"; // Centraliza o texto
+
   span.textContent = segundosRestantes;
 
   // Tenta abrir em modo Picture-in-Picture (Sempre no topo) se o navegador permitir
   if (window.documentPictureInPicture) {
     try {
       pipWindow = await window.documentPictureInPicture.requestWindow({
-        width: 250,
-        height: 150,
+        width: 190,
+        height: 50, // Aumentado para garantir espaço interno
       });
       // Move o timer para a janela flutuante
       pipWindow.document.body.append(container);
@@ -424,15 +433,19 @@ async function enviarVideos() {
           `whatsapp://send?phone=${paciente.numero}&text=${encodeURIComponent(mensagem)}`,
           "wa_window",
         );
-        
+
         // Tenta forçar o navegador a voltar para frente após abrir o app
         setTimeout(() => window.focus(), 500);
       }
 
       // Aguarda o tempo necessário para dar tempo de enviar um por um na fila
       if (index < selecionados.length - 1) {
-        const tempoEspera = enviado ? 4000 : 10000; // 4s para API, 10s para manual (WhatsApp Desktop)
-        await mostrarTemporizador(tempoEspera);
+        if (enviado) {
+          // Com API, o delay pode ser curto apenas para evitar spam (ex: 2s) e sem mostrar o timer chato
+          await delay(2000);
+        } else {
+          await mostrarTemporizador(10000);
+        }
       }
     }
     alert(
@@ -455,14 +468,32 @@ async function enviarVideos() {
 
 // FUNÇÃO PARA ENVIO AUTOMÁTICO VIA API (O QUE VOCÊ VAI VENDER)
 async function enviarViaAPI(numero, mensagem) {
-  const { data, error } = await _supabase.functions.invoke("enviar-whatsapp", {
-    body: {
-      numero: numero,
-      mensagem: mensagem,
-      // Aqui você passaria as chaves do seu cliente vindas da tabela 'configuracoes_venda'
-    },
-  });
-  return !error;
+  try {
+    // Busca as credenciais da tabela configuracoes_venda
+    const { data: config, error: configError } = await _supabase
+      .from("configuracoes_venda")
+      .select("*")
+      .limit(1)
+      .maybeSingle();
+
+    if (configError || !config || !config.gateway_url) return false;
+
+    const { data, error } = await _supabase.functions.invoke(
+      "enviar-whatsapp",
+      {
+        body: {
+          numero: numero,
+          mensagem: mensagem,
+          gateway_url: config.gateway_url,
+          gateway_key: config.gateway_key,
+          instancia: config.instancia_id,
+        },
+      },
+    );
+    return !error;
+  } catch (e) {
+    return false;
+  }
 }
 
 // ================= HISTÓRICO =================
