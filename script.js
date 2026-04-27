@@ -43,6 +43,9 @@ const DB = {
   },
 };
 
+// Função auxiliar para criar uma pausa (delay) entre ações
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 // ================= NORMALIZAR NÚMERO =================
 function normalizarNumero(numero) {
   numero = numero.replace(/\D/g, "");
@@ -828,7 +831,7 @@ function carregarExercicios() {
     if (ex.nome) {
       div.innerHTML += `
         <label style="display:block; margin:4px">
-          <input type="radio" name="exercicio" value="${i}"> <b>${ex.nome}</b> - <small>${ex.rep}</small>
+          <input type="checkbox" name="exercicio" value="${i}"> <b>${ex.nome}</b> - <small>${ex.rep}</small>
         </label>
       `;
     } else if (ex.nota) {
@@ -928,10 +931,22 @@ function enviarMensagem() {
 
   if (!mensagem) return alert("Digite uma mensagem");
 
-  window.open(
-    `https://wa.me/${paciente.numero}?text=${encodeURIComponent(mensagem)}`,
-    "_blank",
-  );
+  // Registro comercial de envio
+  _supabase
+    .from("logs_envios")
+    .insert([
+      {
+        paciente_id: paciente.id,
+        tipo_mensagem: "texto",
+        status: "enviado_manual",
+      },
+    ])
+    .then();
+
+  // Usamos um nome de janela ("wa_window") para evitar abrir várias abas
+  // e não interromper o script da página principal
+  const url = `whatsapp://send?phone=${paciente.numero}&text=${encodeURIComponent(mensagem)}`;
+  window.open(url, "wa_window");
 }
 
 // ================= ENVIAR VIDEOS =================
@@ -941,26 +956,89 @@ async function enviarVideos() {
 
   const paciente = pacientes.find((p) => p.id === selectPacientes.value);
   const aberrancia = document.getElementById("aberrancia").value;
-  const checked = document.querySelector(
-    "#exercicios input[type='radio']:checked",
+  const selecionados = Array.from(
+    document.querySelectorAll("#exercicios input[type='checkbox']:checked"),
   );
 
   if (!aberrancia) return alert("Selecione uma aberrancia");
-  if (!checked) return alert("Selecione um exercicio");
+  if (selecionados.length === 0)
+    return alert("Selecione pelo menos um exercicio");
 
-  const ex = exercicios[aberrancia][checked.value];
-  let mensagem = `💬 *${ex.nome}*\n${ex.rep}\n${ex.video}`;
-  window.open(
-    `https://wa.me/${paciente.numero}?text=${encodeURIComponent(mensagem)}`,
-    "_blank",
+  // Desabilita o botão para evitar cliques duplos durante o processo longo
+  const btnOriginal = document.querySelector(
+    "button[onclick='enviarVideos()']",
   );
+  btnOriginal.disabled = true;
+  btnOriginal.textContent = "⏳ Enviando...";
+
+  const nomesExercicios = [];
+
+  try {
+    for (const [index, checkbox] of selecionados.entries()) {
+      const ex = exercicios[aberrancia][checkbox.value];
+      nomesExercicios.push(ex.nome);
+
+      // Log comercial para controle
+      await _supabase.from("logs_envios").insert([
+        {
+          paciente_id: paciente.id,
+          tipo_mensagem: "video",
+          status: "processando_manual",
+        },
+      ]);
+
+      // Melhoramos a formatação: O link deve estar isolado ao final para facilitar a miniatura
+      const mensagem = `\u2705 *${ex.nome}*\n${ex.rep}\n\nAssista ao vídeo explicativo:\n${ex.video}`;
+
+      btnOriginal.textContent = `⏳ Processando ${index + 1} de ${selecionados.length}...`;
+
+      // Tentativa de envio automático (API)
+      const enviado = await enviarViaAPI(paciente.numero, mensagem);
+
+      // IMPORTANTE: Adicionamos um delay mesmo se enviado via API para o servidor respirar
+      const tempoEspera = enviado ? 3000 : 6000;
+
+      if (!enviado) {
+        // Fallback: Se a API falhar ou não estiver configurada, usa o modo manual
+        window.open(
+          `whatsapp://send?phone=${paciente.numero}&text=${encodeURIComponent(mensagem)}`,
+          "wa_window",
+        );
+      }
+
+      // Aguarda o tempo necessário para processamento da miniatura antes de ir para o próximo
+      if (index < selecionados.length - 1) {
+        await delay(tempoEspera);
+      }
+    }
+    alert(
+      "Todos os links foram enviados para o WhatsApp. Verifique se clicou em enviar em cada um deles.",
+    );
+  } catch (err) {
+    console.error("Erro no envio:", err);
+  } finally {
+    btnOriginal.disabled = false;
+    btnOriginal.textContent = "🎥 Enviar Vídeos";
+  }
 
   await DB.addHistorico({
     paciente_id: paciente.id,
     aberrancia,
-    exercicios: [ex.nome],
+    exercicios: nomesExercicios,
   });
   renderHistorico();
+}
+
+// FUNÇÃO PARA ENVIO AUTOMÁTICO VIA API (O QUE VOCÊ VAI VENDER)
+async function enviarViaAPI(numero, mensagem) {
+  const { data, error } = await _supabase.functions.invoke("enviar-whatsapp", {
+    body: {
+      numero: numero,
+      mensagem: mensagem,
+      // Aqui você passaria as chaves do seu cliente vindas da tabela 'configuracoes_venda'
+    },
+  });
+  return !error;
 }
 
 // ================= HISTÓRICO =================
