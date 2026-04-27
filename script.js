@@ -47,12 +47,61 @@ const DB = {
       .from("biblioteca_exercicios")
       .select("*")
       .order("categoria", { ascending: true });
+    if (error) console.error("Erro ao buscar biblioteca:", error);
     return data || [];
-  }
+  },
 };
 
 // Função auxiliar para criar uma pausa (delay) entre ações
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// Função para mostrar o temporizador visual na tela
+let pipWindow = null;
+
+async function mostrarTemporizador(ms) {
+  const container = document.getElementById("temporizador-container");
+  const span = document.getElementById("segundos-timer");
+  let segundosRestantes = Math.ceil(ms / 1000);
+
+  container.style.display = "block";
+  container.classList.add("timer-fixo");
+  span.textContent = segundosRestantes;
+
+  // Tenta abrir em modo Picture-in-Picture (Sempre no topo) se o navegador permitir
+  if (window.documentPictureInPicture) {
+    try {
+      pipWindow = await window.documentPictureInPicture.requestWindow({
+        width: 250,
+        height: 150,
+      });
+      // Move o timer para a janela flutuante
+      pipWindow.document.body.append(container);
+      container.classList.remove("timer-fixo");
+      container.style.display = "flex";
+    } catch (e) {
+      console.log("PiP não iniciado ou recusado.");
+    }
+  }
+
+  return new Promise((resolve) => {
+    const intervalo = setInterval(() => {
+      segundosRestantes--;
+      span.textContent = segundosRestantes;
+
+      if (segundosRestantes <= 0) {
+        clearInterval(intervalo);
+        if (pipWindow) {
+          pipWindow.close();
+          document.body.append(container); // Devolve o elemento para a página
+          pipWindow = null;
+        }
+        container.style.display = "none";
+        window.focus(); // Tenta trazer o foco de volta para o navegador
+        resolve();
+      }
+    }, 1000);
+  });
+}
 
 // ================= NORMALIZAR NÚMERO =================
 function normalizarNumero(numero) {
@@ -161,21 +210,22 @@ let exercicios = {};
 
 async function carregarBibliotecaDeExercicios() {
   const rawData = await DB.getBiblioteca();
-  
+
   // Transforma os dados do banco no formato que o app já usa
   exercicios = rawData.reduce((acc, curr) => {
     if (!acc[curr.categoria]) acc[curr.categoria] = [];
     acc[curr.categoria].push({
       nome: curr.nome,
       video: curr.video_url,
-      rep: curr.reps
+      rep: curr.reps,
     });
     return acc;
   }, {});
 
   // Atualiza o select de aberrâncias na tela
   const selAberrancia = document.getElementById("aberrancia");
-  selAberrancia.innerHTML = '<option value="">Selecione uma aberrância</option>';
+  selAberrancia.innerHTML =
+    '<option value="">Selecione uma aberrância</option>';
   Object.keys(exercicios).forEach((ab) => {
     const option = document.createElement("option");
     option.value = ab;
@@ -224,8 +274,8 @@ function filtrarAberrancia() {
     return;
   }
 
-  const opcoes = Array.from(selAberrancia.options).filter((opt) =>
-    opt.text.toUpperCase().startsWith(filtro),
+  const opcoes = Array.from(selAberrancia.options).filter(
+    (opt) => opt.value !== "" && opt.text.toUpperCase().includes(filtro),
   );
 
   if (opcoes.length === 0) {
@@ -374,12 +424,15 @@ async function enviarVideos() {
           `whatsapp://send?phone=${paciente.numero}&text=${encodeURIComponent(mensagem)}`,
           "wa_window",
         );
+        
+        // Tenta forçar o navegador a voltar para frente após abrir o app
+        setTimeout(() => window.focus(), 500);
       }
 
       // Aguarda o tempo necessário para dar tempo de enviar um por um na fila
       if (index < selecionados.length - 1) {
         const tempoEspera = enviado ? 4000 : 10000; // 4s para API, 10s para manual (WhatsApp Desktop)
-        await delay(tempoEspera);
+        await mostrarTemporizador(tempoEspera);
       }
     }
     alert(
