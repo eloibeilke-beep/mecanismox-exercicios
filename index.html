@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Supabase Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>Mecanismox-exercícios</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        display: flex;
+        background: #f4f6f9;
+        height: 100vh;
+      }
+      .sidebar {
+        width: 280px;
+        background-color: #1f2d3d;
+        color: white;
+        padding: 15px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .sidebar h2 {
+        margin-top: 0;
+        font-weight: 700;
+      }
+      .sidebar input,
+      .sidebar select,
+      .sidebar button {
+        width: 100%;
+        padding: 12px; /* Maior para facilitar o toque */
+        border-radius: 4px;
+        border: none;
+        box-sizing: border-box;
+        font-size: 16px; /* Evita zoom automático no mobile */
+      }
+      .sidebar input,
+      .sidebar select {
+        margin-bottom: 6px;
+      }
+
+      #btnExcluir {
+        background-color: #ff0202;
+        color: white;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+      }
+      #btnEditar {
+        background-color: #f39c12;
+        color: white;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+      }
+      #btnSalvar {
+        background-color: #02ff02;
+        color: white;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+      }
+      .sidebar button:hover {
+        background-color: #367fa9;
+      }
+      #listaPacientes {
+        margin-top: 10px;
+        overflow-y: auto;
+        max-height: 250px;
+      }
+      #listaPacientes div {
+        background: #2c3e50;
+        padding: 8px;
+        border-radius: 5px;
+        margin-bottom: 6px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 14px;
+      }
+      #listaPacientes div span {
+        flex: 1;
+        padding-right: 10px;
+      }
+      #listaPacientes button {
+        margin-left: 6px;
+        padding: 5px 8px;
+        font-size: 14px;
+        background-color: #3c8dbc;
+        border: none;
+        border-radius: 4px;
+        color: white;
+        cursor: pointer;
+      }
+      #listaPacientes button:hover {
+        background-color: #367fa9;
+      }
+      .main {
+        flex: 1;
+        padding: 15px; /* Reduzido para ganhar espaço lateral no mobile */
+        box-sizing: border-box;
+        overflow-y: auto;
+      }
+      .main h2 {
+        margin-top: 0;
+      }
+      .box-mensagem {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 15px;
+      }
+      .box-mensagem h3 {
+        margin-top: 0;
+        margin-bottom: 10px;
+      }
+      #mensagemPadrao,
+      #mensagemExtra {
+        width: 100%;
+        box-sizing: border-box;
+        font-size: 16px;
+        margin-bottom: 10px;
+        font-weight: 700;
+      }
+      #mensagemExtra {
+        min-height: 60px;
+        resize: vertical;
+        padding: 8px;
+      }
+      #aberrancia {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        margin-bottom: 15px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+      }
+      #exercicios {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 15px;
+        max-height: 350px;
+        overflow-y: auto;
+      }
+      #exercicios label {
+        display: block;
+        margin-bottom: 12px; /* Mais espaço entre exercícios */
+        cursor: pointer;
+        font-size: 16px;
+        padding: 5px 0;
+      }
+      #exercicios input[type="radio"] {
+        margin-right: 8px;
+        cursor: pointer;
+      }
+      .botoes {
+        margin-bottom: 20px;
+      }
+      .botoes button {
+        background-color: #3c8dbc;
+        color: white;
+        padding: 14px 16px; /* Botões mais altos para o polegar */
+        border: none;
+        border-radius: 6px;
+        font-size: 15px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+        width: 100%;
+        margin-bottom: 8px;
+      }
+      .botoes button:hover {
+        background-color: #367fa9;
+      }
+      #listaAberrancia {
+        position: absolute;
+        background: white;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        max-height: 200px;
+        overflow-y: auto;
+        width: 100%;
+        z-index: 10;
+        display: none;
+      }
+      #listaAberrancia div {
+        padding: 8px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      #listaAberrancia div:hover,
+      #listaAberrancia div.selecionado {
+        background-color: #3c8dbc;
+        color: white;
+      }
+      .container-busca {
+        position: relative;
+      }
+      @media (max-width: 768px) {
+        body {
+          height: auto !important;
+          flex-direction: column;
+        }
+        .sidebar {
+          width: 100% !important;
+          height: auto !important;
+          overflow: visible !important;
+        }
+        .main {
+          flex: none !important;
+          width: 100% !important;
+          overflow: visible !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="sidebar">
+      <h2>Mecanismox-exercícios</h2>
+
+      <input id="nome" placeholder="Nome do paciente" />
+      <input id="numero" placeholder="WhatsApp" />
+
+      <button id="btnSalvar">Salvar</button>
+      <button id="btnSalvarEdicao" style="display: none">Salvar edição</button>
+
+      <button id="btnEditarEdicao" style="display: none">Editar edição</button>
+
+      <button id="btnExcluir">Excluir</button>
+      <button id="btnExcluirEdicao" style="display: none">
+        Excluir edição
+      </button>
+
+      <select
+        id="pacientes"
+        size="6"
+        style="width: 100%; margin-top: 10px"
+      ></select>
+      <input
+        id="buscarPaciente"
+        placeholder="Buscar paciente..."
+        style="
+          margin-bottom: 10px;
+          padding: 6px;
+          width: 100%;
+          box-sizing: border-box;
+        "
+      />
+
+      <div id="listaPacientes"></div>
+    </div>
+
+    <div class="main">
+      <h2>Envio de Exercícios</h2>
+
+      <div class="box-mensagem">
+        <h3>Mensagem inicial</h3>
+
+        <select id="mensagemPadrao">
+          <option value="">Sem mensagem</option>
+          <option
+            value="Olá! Para maior eficácia no tratamento, seguem os exercícios complementares da Terapia Miofascial Restaurativa. Os exercícios devem ser realizados conforme as orientações nos vídeos, durante 30 dias. "
+          >
+            Mensagem Padrão 1
+          </option>
+          <option
+            value="Segue seu protocolo personalizado. Execute conforme orientado."
+          >
+            Mensagem Padrão 2
+          </option>
+        </select>
+
+        <textarea
+          id="mensagemExtra"
+          placeholder="Ou escreva uma mensagem personalizada..."
+        ></textarea>
+      </div>
+      <div class="container-busca">
+        <input
+          id="buscaraberrancia"
+          oninput="filtrarAberrancia()"
+          onkeydown="navegarAberrancia(event)"
+          placeholder="Buscar aberrancia..."
+          style="
+            margin-bottom: 10px;
+            padding: 6px;
+            width: 100%;
+            box-sizing: border-box;
+          "
+        />
+        <div id="listaAberrancia"></div>
+      </div>
+      <select id="aberrancia" onchange="carregarExercicios()"></select>
+
+      <div id="exercicios"></div>
+
+      <div class="botoes">
+        <button onclick="enviarMensagem()">💬 Enviar Mensagem</button>
+        <button onclick="enviarVideos()">🎥 Enviar Vídeos</button>
+        <button onclick="exportarDados()" style="background-color: #27ae60">
+          📥 Exportar Dados
+        </button>
+        <button
+          onclick="document.getElementById('importFile').click()"
+          style="background-color: #2980b9"
+        >
+          📤 Importar Dados
+        </button>
+        <input
+          type="file"
+          id="importFile"
+          accept=".json"
+          style="display: none"
+          onchange="importarDados(event)"
+        />
+      </div>
+
+      <h3>Histórico do Paciente</h3>
+      <div id="historico">Selecione um paciente para ver o histórico</div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,195 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  display: flex;
+  background: #f4f6f9;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 280px;
+  background: #1f2d3d;
+  color: white;
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.sidebar input,
+.sidebar select,
+.sidebar button {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.sidebar button {
+  background: #3c8dbc;
+  color: white;
+  cursor: pointer;
+}
+
+.main {
+  flex: 1;
+  padding: 25px;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.box-mensagem {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+}
+
+.box-mensagem select,
+.box-mensagem textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.box-mensagem textarea {
+  min-height: 60px;
+  resize: vertical;
+}
+
+#exercicios {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+#exercicios label {
+  display: block;
+  margin-bottom: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+#exercicios input[type="radio"] {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.botoes {
+  margin-bottom: 20px;
+}
+
+.botoes button {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 8px;
+  border: none;
+  border-radius: 6px;
+  background: #3c8dbc;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+#listaPacientes {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  body {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    padding: 10px;
+    overflow: visible;
+  }
+
+  .main {
+    width: 100%;
+    padding: 15px;
+    overflow: visible;
+    flex: none;
+  }
+
+  .sidebar input,
+  .sidebar select,
+  .sidebar button {
+    font-size: 16px;
+    padding: 10px;
+  }
+
+  #pacientes {
+    display: none;
+  }
+
+  #listaPacientes {
+    display: block;
+    max-height: none;
+    overflow: visible;
+  }
+
+  #listaPacientes div {
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  #aberrancia {
+    display: none;
+  }
+
+  #buscaraberrancia {
+    font-size: 16px;
+    padding: 10px;
+  }
+
+  #listaAberrancia {
+    max-height: 300px;
+  }
+
+  #listaAberrancia div {
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  #exercicios {
+    max-height: none;
+    overflow: visible;
+  }
+
+  #exercicios label {
+    padding: 10px;
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+
+  .botoes button {
+    width: 100%;
+    font-size: 16px;
+    padding: 12px;
+    margin-bottom: 8px;
+  }
+
+  .container-busca {
+    position: relative;
+  }
+
+  #listaAberrancia {
+    position: relative;
+    width: 100%;
+  }
+}

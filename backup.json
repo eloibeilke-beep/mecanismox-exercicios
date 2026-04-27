@@ -1,0 +1,39 @@
+{
+  "pacientes": [
+    {
+      "nome": "ELÓI BEILKE",
+      "numero": "5549991110686"
+    },
+    {
+      "nome": "NEUSA HAHN BEILKE",
+      "numero": "5549991036530"
+    }
+  ],
+  "historico": {
+    "ELÓI BEILKE": [
+      {
+        "data": "25/02/2026",
+        "aberrancia": "PUNHO DESVIADO",
+        "exercicios": [
+          "Flexão e Extensão do Punho"
+        ]
+      },
+      {
+        "data": "25/02/2026",
+        "aberrancia": "JOELHO VARIZIZADO",
+        "exercicios": [
+          "Mobilidade em Abdução"
+        ]
+      }
+    ],
+    "NEUSA HAHN BEILKE": [
+      {
+        "data": "25/02/2026",
+        "aberrancia": "PUNHO DESVIADO",
+        "exercicios": [
+          "Alongamento dos Flexores"
+        ]
+      }
+    ]
+  }
+}
