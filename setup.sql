@@ -25,15 +25,21 @@ CREATE TABLE IF NOT EXISTS configuracoes_venda (
   gateway_url text, -- Ex: https://sua-api.com
   gateway_key text, -- Token da API
   instancia_id text, -- Nome da instância conectada
-  created_at timestamptz default now() not null
+  created_at timestamptz default now() not null,
+  constraint unique_config UNIQUE (id) -- Garante alvo para ON CONFLICT
 );
 
 -- Habilitar RLS e permitir acesso para a tabela de configurações
 ALTER TABLE configuracoes_venda ENABLE ROW LEVEL SECURITY;
+
+-- Remover políticas antigas para evitar erro de duplicata
+DROP POLICY IF EXISTS "Acesso total configuracoes" ON configuracoes_venda;
 CREATE POLICY "Acesso total configuracoes" ON configuracoes_venda FOR ALL USING (true);
 
--- Inserir uma linha inicial para evitar erro 406 ao buscar .single()
-INSERT INTO configuracoes_venda (gateway_url) VALUES (NULL) ON CONFLICT DO NOTHING;
+-- Inserir uma linha inicial se a tabela estiver vazia
+INSERT INTO configuracoes_venda (id, gateway_url) 
+VALUES ('00000000-0000-0000-0000-000000000000', NULL) 
+ON CONFLICT (id) DO NOTHING;
 
 -- Tabela de Logs (Ajustada para bater com o nome usado no script.js)
 CREATE TABLE IF NOT EXISTS logs_envios (
@@ -63,9 +69,14 @@ ALTER TABLE pacientes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE historico ENABLE ROW LEVEL SECURITY;
 ALTER TABLE biblioteca_exercicios ENABLE ROW LEVEL SECURITY;
 
--- Políticas simplificadas para funcionamento imediato
+-- Limpeza e criação de políticas para evitar erros
+DROP POLICY IF EXISTS "Leitura pública" ON biblioteca_exercicios;
 CREATE POLICY "Leitura pública" ON biblioteca_exercicios FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Acesso total pacientes" ON pacientes;
 CREATE POLICY "Acesso total pacientes" ON pacientes FOR ALL USING (true);
+
+DROP POLICY IF EXISTS "Acesso total historico" ON historico;
 CREATE POLICY "Acesso total historico" ON historico FOR ALL USING (true);
 
 -- Inserir dados de exemplo para teste
