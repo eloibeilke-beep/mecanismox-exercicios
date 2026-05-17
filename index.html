@@ -7,264 +7,202 @@
     <title>Mecanismox-exercícios</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
+      :root {
+        --primary: #2563eb;
+        --primary-hover: #1d4ed8;
+        --bg: #f8fafc;
+        --surface: #ffffff;
+        --text: #1e293b;
+        --sidebar-bg: #0f172a;
+        --danger: #ef4444;
+        --success: #22c55e;
+        --warning: #f59e0b;
+      }
+
       body {
         margin: 0;
-        font-family: Arial, sans-serif;
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         display: flex;
-        background: #f4f6f9;
+        background: var(--bg);
+        color: var(--text);
         height: 100vh;
       }
+
       .sidebar {
         width: 280px;
-        background-color: #1f2d3d;
+        background-color: var(--sidebar-bg);
         color: white;
-        padding: 15px;
+        padding: 20px;
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 12px;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
       }
+
       .sidebar h2 {
         margin-top: 0;
         font-weight: 700;
+        font-size: 1.2rem;
+        color: #e2e8f0;
+        border-bottom: 1px solid #334155;
+        padding-bottom: 10px;
       }
-      .sidebar input,
-      .sidebar select,
+
+      .sidebar input, 
+      .sidebar select {
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #334155;
+        background: #1e293b;
+        color: white;
+        font-size: 15px;
+      }
+
       .sidebar button {
         width: 100%;
-        padding: 12px; /* Maior para facilitar o toque */
-        border-radius: 4px;
+        padding: 12px;
+        border-radius: 8px;
         border: none;
-        box-sizing: border-box;
-        font-size: 16px; /* Evita zoom automático no mobile */
-      }
-      .sidebar input,
-      .sidebar select {
-        margin-bottom: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
       }
 
       #btnExcluir {
-        background-color: #ff0202;
+        background-color: var(--danger);
         color: white;
-        cursor: pointer;
-        font-weight: 600;
-        transition: background-color 0.3s ease;
       }
       #btnEditar {
-        background-color: #f39c12;
+        background-color: var(--warning);
         color: white;
-        cursor: pointer;
-        font-weight: 600;
-        transition: background-color 0.3s ease;
       }
       #btnSalvar {
-        background-color: #02ff02;
+        background-color: var(--success);
         color: white;
-        cursor: pointer;
-        font-weight: 600;
-        transition: background-color 0.3s ease;
       }
-      .sidebar button:hover {
-        background-color: #367fa9;
-      }
-      #listaPacientes {
-        margin-top: 10px;
-        overflow-y: auto;
-        max-height: 250px;
-      }
-      #listaPacientes div {
-        background: #2c3e50;
-        padding: 8px;
-        border-radius: 5px;
-        margin-bottom: 6px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 14px;
-      }
-      #listaPacientes div span {
-        flex: 1;
-        padding-right: 10px;
-      }
-      #listaPacientes button {
-        margin-left: 6px;
-        padding: 5px 8px;
-        font-size: 14px;
-        background-color: #3c8dbc;
-        border: none;
-        border-radius: 4px;
-        color: white;
-        cursor: pointer;
-      }
-      #listaPacientes button:hover {
-        background-color: #367fa9;
-      }
+
       .main {
         flex: 1;
-        padding: 15px; /* Reduzido para ganhar espaço lateral no mobile */
+        padding: 20px;
         box-sizing: border-box;
         overflow-y: auto;
       }
+
       .main h2 {
         margin-top: 0;
+        color: var(--sidebar-bg);
+        font-weight: 800;
       }
+
       .box-mensagem {
-        background: white;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
-        margin-bottom: 15px;
+        background: var(--surface);
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
       }
+
       .box-mensagem h3 {
         margin-top: 0;
-        margin-bottom: 10px;
+        font-size: 1rem;
+        color: #64748b;
       }
+
       #mensagemPadrao,
       #mensagemExtra {
         width: 100%;
         box-sizing: border-box;
         font-size: 16px;
-        margin-bottom: 10px;
-        font-weight: 700;
+        margin-bottom: 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 10px;
       }
+
       #mensagemExtra {
         min-height: 60px;
-        resize: vertical;
-        padding: 8px;
       }
+
       #aberrancia {
         width: 100%;
-        padding: 12px;
+        padding: 14px;
         font-size: 16px;
-        margin-bottom: 15px;
-        border-radius: 4px;
-        border: 1px solid #ccc;
-      }
-      #exercicios {
-        background: white;
-        padding: 15px;
+        margin-bottom: 20px;
         border-radius: 8px;
-        box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
-        margin-bottom: 15px;
-        max-height: 350px;
-        overflow-y: auto;
+        border: 1px solid #e2e8f0;
+        background: white;
       }
-      #exercicios label {
-        display: block;
-        margin-bottom: 12px; /* Mais espaço entre exercícios */
-        cursor: pointer;
-        font-size: 16px;
-        padding: 5px 0;
-      }
-      #exercicios input[type="radio"],
-      #exercicios input[type="checkbox"] {
-        margin-right: 8px;
-        cursor: pointer;
-      }
-      .botoes {
+
+      #exercicios {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 15px;
         margin-bottom: 20px;
       }
-      .botoes button {
-        background-color: #3c8dbc;
-        color: white;
-        padding: 14px 16px; /* Botões mais altos para o polegar */
-        border: none;
-        border-radius: 6px;
-        font-size: 15px;
-        cursor: pointer;
-        font-weight: 600;
-        transition: background-color 0.3s ease;
+
+      .card-exercicio {
+        background: white;
+        border-radius: 12px;
+        padding: 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 2px solid transparent;
+        transition: all 0.2s;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .card-exercicio.selected {
+        border-color: var(--primary);
+        background: #eff6ff;
+      }
+
+      .thumb-video {
         width: 100%;
-        margin-bottom: 8px;
+        height: 120px;
+        background: #f1f5f9;
+        border-radius: 8px;
+        object-fit: cover;
       }
-      .botoes button:hover {
-        background-color: #367fa9;
+
+      .botoes {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 30px;
       }
+
+      .botoes button {
+        padding: 16px;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 14px;
+      }
+
+      .btn-wa-msg { background: #075e54; color: white; }
+      .btn-wa-vid { background: #25d366; color: white; }
+
       #listaAberrancia {
         position: absolute;
         background: white;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        max-height: 200px;
-        overflow-y: auto;
-        width: 100%;
-        z-index: 10;
-        display: none;
-      }
-      #listaAberrancia div {
-        padding: 8px;
-        cursor: pointer;
-        font-size: 16px;
-      }
-      #listaAberrancia div:hover,
-      #listaAberrancia div.selecionado {
-        background-color: #3c8dbc;
-        color: white;
-      }
-      .container-busca {
-        position: relative;
-      }
-      /* Estilo do Temporizador Flutuante */
-      #temporizador-container {
-        position: static; /* Ajustado para funcionar dentro do PiP */
-        width: 100%;
-        height: 100%;
-        background: #e74c3c;
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        font-family: Arial, sans-serif;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        display: none; /* Mantido oculto até o disparo */
-        z-index: 9999;
-        font-weight: bold;
-        font-size: 18px;
-      }
-      #segundos-timer {
-        font-size: 32px;
-        display: block;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
       }
 
-      /* Estilo para quando estiver na página normal */
-      .timer-fixo {
-        position: fixed !important;
-        top: 20px;
-        right: 20px;
-        width: auto !important;
-        padding: 15px 25px;
-        border-radius: 50px;
-        border: 3px solid white;
-        animation: pulse 1s infinite;
-      }
-
-      @keyframes pulse {
-        0% {
-          transform: scale(1);
-        }
-        50% {
-          transform: scale(1.05);
-        }
-        100% {
-          transform: scale(1);
-        }
-      }
       @media (max-width: 768px) {
         body {
           height: auto !important;
           flex-direction: column;
         }
         .sidebar {
-          width: 100% !important;
-          height: auto !important;
-          overflow: visible !important;
+          width: 100%;
+          position: relative;
         }
-        .main {
-          flex: none !important;
-          width: 100% !important;
-          overflow: visible !important;
-        }
+        .botoes { grid-template-columns: 1fr; }
       }
     </style>
   </head>
@@ -354,15 +292,12 @@
       <div id="exercicios"></div>
 
       <div class="botoes">
-        <button onclick="enviarMensagem()">💬 Enviar Mensagem</button>
-        <button onclick="enviarVideos()">🎥 Enviar Vídeos</button>
-        <button onclick="exportarDados()" style="background-color: #27ae60">
+        <button class="btn-wa-msg" onclick="enviarMensagem()">💬 Enviar Mensagem</button>
+        <button class="btn-wa-vid" onclick="enviarVideos()">🎥 Enviar Vídeos</button>
+        <button onclick="exportarDados()" style="background-color: #64748b; color: white;">
           📥 Exportar Dados
         </button>
-        <button
-          onclick="document.getElementById('importFile').click()"
-          style="background-color: #2980b9"
-        >
+        <button onclick="document.getElementById('importFile').click()" style="background-color: #94a3b8; color: white;">
           📤 Importar Dados
         </button>
         <input

@@ -249,22 +249,32 @@ function carregarExercicios() {
   const sel = document.getElementById("aberrancia");
   div.innerHTML = "";
 
-  const key = sel.value;
-  if (!key) return;
+  const categoria = sel.value;
+  if (!categoria) return;
 
-  exercicios[key].forEach((ex, i) => {
+  exercicios[categoria].forEach((ex, i) => {
     if (ex.nome) {
+      // Extrair ID do vídeo para a miniatura
+      const videoId = ex.video.split('v=')[1]?.split('&')[0] || ex.video.split('/').pop();
+      const thumbUrl = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+
       div.innerHTML += `
-        <label style="display:block; margin:4px">
-          <input type="checkbox" name="exercicio" value="${i}"> <b>${ex.nome}</b> - <small>${ex.rep}</small>
-        </label>
-      `;
-    } else if (ex.nota) {
-      div.innerHTML += `
-        <p style="color:red; font-weight:bold; margin:4px;">${ex.nota}</p>
+        <div class="card-ex" onclick="toggleExercicio(this)">
+          <img src="${thumbUrl}" alt="Thumbnail">
+          <input type="checkbox" name="exercicio" value="${i}" onclick="event.stopPropagation()">
+          <b>${ex.nome}</b>
+          <small>${ex.rep}</small>
+        </div>
       `;
     }
   });
+}
+
+// Função para selecionar o card visualmente
+function toggleExercicio(card) {
+  const cb = card.querySelector('input');
+  cb.checked = !cb.checked;
+  card.classList.toggle('selected', cb.checked);
 }
 
 // FILTRA ABERRÂNCIAS POR INICIAIS
@@ -396,74 +406,104 @@ async function enviarVideos() {
   if (selecionados.length === 0)
     return alert("Selecione pelo menos um exercicio");
 
-  // Desabilita o botão para evitar cliques duplos durante o processo longo
-  const btnOriginal = document.querySelector(
-    "button[onclick='enviarVideos()']",
-  );
+  const btnOriginal = document.querySelector(".btn-wa-vid");
   btnOriginal.disabled = true;
-  btnOriginal.textContent = "⏳ Enviando...";
+  btnOriginal.textContent = "⏳ Preparando...";
 
   const nomesExercicios = [];
 
   try {
-    for (const [index, checkbox] of selecionados.entries()) {
-      const ex = exercicios[aberrancia][checkbox.value];
-      nomesExercicios.push(ex.nome);
+    // 1. Verificar se a API está configurada
+    const { data: config } = await _supabase.from("configuracoes_venda").select("*").limit(1).maybeSingle();
+    const temAPI = config && config.gateway_url && config.gateway_url.includes("http");
 
-      // Log comercial para controle
-      await _supabase.from("logs_envios").insert([
-        {
-          paciente_id: paciente.id,
-          tipo_mensagem: "video",
-          status: "processando_manual",
-        },
-      ]);
+    if (temAPI) {
+      // MODO PROFISSIONAL: Envia bolhas separadas para garantir PREVIEWS/CARDS
+      const cabecalho = `*Protocolo de Exercícios: ${aberrancia}*\n_Abaixo seguem os vídeos demonstrativos:_`;
+      await enviarViaAPI(paciente.numero, cabecalho);
+      await new Promise(r => setTimeout(r, 1500));
 
-      // Melhoramos a formatação: O link deve estar isolado ao final para facilitar a miniatura
-      const mensagem = `\u2705 *${ex.nome}*\n${ex.rep}\n\nAssista ao vídeo explicativo:\n${ex.video}`;
+      for (const [index, checkbox] of selecionados.entries()) {
+        const ex = exercicios[aberrancia][checkbox.value];
+        nomesExercicios.push(ex.nome);
 
-      btnOriginal.textContent = `⏳ Processando ${index + 1} de ${selecionados.length}...`;
+        btnOriginal.textContent = `🚀 Enviando ${index + 1}/${selecionados.length}...`;
+        const msgVideo = `🎥 *${ex.nome}*\n${ex.rep}\n\n${ex.video}`;
+        await enviarViaAPI(paciente.numero, msgVideo);
 
-      // Tentativa de envio automático (API)
-      const enviado = await enviarViaAPI(paciente.numero, mensagem);
-
-      if (!enviado) {
-        // Fallback: Se a API falhar ou não estiver configurada, usa o modo manual
-        window.open(
-          `whatsapp://send?phone=${paciente.numero}&text=${encodeURIComponent(mensagem)}`,
-          "wa_window",
-        );
-
-        // Tenta forçar o navegador a voltar para frente após abrir o app
-        setTimeout(() => window.focus(), 500);
+        // Delay crucial para o WhatsApp não agrupar e "matar" a miniatura
+        if (index < selecionados.length - 1) await new Promise(r => setTimeout(r, 2000));
       }
+      alert("Protocolo enviado com sucesso! Verifique os cards no WhatsApp.");
+    } else {
+      // MODO MANUAL MELHORADO: Envia um por um com intervalo para garantir o vídeo/card
+      alert("Iniciando envio manual. Vou abrir os vídeos um por um para que todos apareçam com imagem. Aguarde o temporizador entre cada envio.");
+      
+      for (const [index, checkbox] of selecionados.entries()) {
+        const ex = exercicios[aberrancia][checkbox.value];
+        nomesExercicios.push(ex.nome);
+        
+        const msgVideo = `🎥 *${ex.nome}*\n${ex.rep}\n\n${ex.video}`;
+        const url = `whatsapp://send?phone=${paciente.numero}&text=${encodeURIComponent(msgVideo)}`;
+        
+        window.open(url, "_blank");
 
-      // Aguarda o tempo necessário para dar tempo de enviar um por um na fila
-      if (index < selecionados.length - 1) {
-        if (enviado) {
-          // Com API, o delay pode ser curto apenas para evitar spam (ex: 2s) e sem mostrar o timer chato
-          await delay(2000);
-        } else {
-          await mostrarTemporizador(10000);
+        // Se não for o último, espera 8 segundos para o usuário enviar e o navegador não bloquear
+        if (index < selecionados.length - 1) {
+          btnOriginal.textContent = `⏳ Aguarde o próximo (${index + 2}/${selecionados.length})...`;
+          await mostrarTemporizador(8000); 
         }
       }
     }
-    alert(
-      "Todos os links foram enviados para o WhatsApp. Verifique se clicou em enviar em cada um deles.",
-    );
+
+    // Log no banco de dados
+    await _supabase.from("logs_envios").insert([{
+      paciente_id: paciente.id,
+      tipo_mensagem: "video_multiplo",
+      status: temAPI ? "enviado_api" : "enviado_manual"
+    }]);
+
+    await DB.addHistorico({
+      paciente_id: paciente.id,
+      aberrancia,
+      exercicios: nomesExercicios,
+    });
+    renderHistorico();
+
   } catch (err) {
     console.error("Erro no envio:", err);
   } finally {
     btnOriginal.disabled = false;
     btnOriginal.textContent = "🎥 Enviar Vídeos";
   }
+}
 
-  await DB.addHistorico({
-    paciente_id: paciente.id,
-    aberrancia,
-    exercicios: nomesExercicios,
-  });
-  renderHistorico();
+// ================= CONFIGURAÇÕES API =================
+async function carregarConfiguracoes() {
+  const { data } = await _supabase.from("configuracoes_venda").select("*").limit(1).maybeSingle();
+  if (data) {
+    document.getElementById("cfgUrl").value = data.gateway_url || "";
+    document.getElementById("cfgKey").value = data.gateway_key || "";
+    document.getElementById("cfgInstancia").value = data.instancia_id || "";
+  }
+}
+
+async function salvarConfiguracoes() {
+  const payload = {
+    id: '00000000-0000-0000-0000-000000000000', // ID fixo definido no setup.sql
+    gateway_url: document.getElementById("cfgUrl").value.trim(),
+    gateway_key: document.getElementById("cfgKey").value.trim(),
+    instancia_id: document.getElementById("cfgInstancia").value.trim()
+  };
+
+  const { error } = await _supabase.from("configuracoes_venda").upsert(payload);
+  
+  if (error) {
+    alert("Erro ao salvar: " + error.message);
+  } else {
+    alert("API configurada com sucesso! O envio agora será automático.");
+    document.getElementById('configContent').style.display = 'none';
+  }
 }
 
 // FUNÇÃO PARA ENVIO AUTOMÁTICO VIA API (O QUE VOCÊ VAI VENDER)
@@ -561,6 +601,7 @@ async function importarDados(event) {
 // ================= INICIALIZAÇÃO =================
 document.addEventListener("DOMContentLoaded", async () => {
   await carregarBibliotecaDeExercicios();
+  await carregarConfiguracoes();
 
   document.getElementById("btnSalvar").addEventListener("click", () => {
     addPaciente();
