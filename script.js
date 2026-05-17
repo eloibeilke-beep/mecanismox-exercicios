@@ -430,23 +430,31 @@ async function enviarVideos() {
     const temAPI = config && config.gateway_url && config.gateway_url.includes("http");
 
     if (temAPI) {
-      // MODO PROFISSIONAL: Envia bolhas separadas para garantir PREVIEWS/CARDS
-      const cabecalho = `*Protocolo de Exercícios: ${aberrancia}*\n_Abaixo seguem os vídeos demonstrativos:_`;
+      // MODO AUTOMÁTICO VIA API
+      const cabecalho = `*Protocolo: ${aberrancia}*\n_Confira os vídeos individuais abaixo:_`;
       await enviarViaAPI(paciente.numero, cabecalho);
-      await new Promise(r => setTimeout(r, 1500));
+      
+      // Pequeno delay após o cabeçalho
+      await delay(1500);
 
       for (const [index, checkbox] of selecionados.entries()) {
         const ex = exercicios[aberrancia][checkbox.value];
         nomesExercicios.push(ex.nome);
 
         btnOriginal.textContent = `🚀 Enviando ${index + 1}/${selecionados.length}...`;
+        
+        // Link isolado no final ajuda o WhatsApp a gerar o preview
         const msgVideo = `🎥 *${ex.nome}*\n${ex.rep}\n\n${ex.video}`;
-        await enviarViaAPI(paciente.numero, msgVideo);
+        
+        const sucesso = await enviarViaAPI(paciente.numero, msgVideo);
+        
+        if (!sucesso) throw new Error(`Falha ao enviar vídeo ${index + 1}`);
 
-        // Delay crucial para o WhatsApp não agrupar e "matar" a miniatura
-        if (index < selecionados.length - 1) await new Promise(r => setTimeout(r, 2000));
+        // Espera 2 segundos entre vídeos para garantir que o WhatsApp gere o Card
+        if (index < selecionados.length - 1) await delay(2000);
       }
-      alert("Protocolo enviado com sucesso! Verifique os cards no WhatsApp.");
+      
+      alert("Protocolo enviado com sucesso via API!");
     } else {
       // MODO MANUAL MELHORADO: Envia um por um com intervalo para garantir o vídeo/card
       alert("Iniciando envio manual. Vou abrir os vídeos um por um para que todos apareçam com imagem. Aguarde o temporizador entre cada envio.");

@@ -17,17 +17,20 @@ serve(async (req) => {
     const { numero, mensagem, gateway_url, gateway_key, instancia } =
       await req.json();
 
-    // Aqui o servidor faz o "Enter" automático via Gateway
+    // Formata o número (garante que tenha o @s.whatsapp.net se o gateway exigir)
+    const remoteJid = numero.includes('@') ? numero : `${numero}@s.whatsapp.net`;
+
     const res = await fetch(`${gateway_url}/message/sendText/${instancia}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        apikey: gateway_key,
+        "apikey": gateway_key,
       },
       body: JSON.stringify({
-        number: numero,
+        number: remoteJid,
         text: mensagem,
-        linkPreview: true, // ISSO GERA A MINIATURA AUTOMÁTICA
+        linkPreview: true,
+        delay: 1200 // Pequeno delay interno no servidor
       }),
     });
 

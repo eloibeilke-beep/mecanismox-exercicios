@@ -204,36 +204,121 @@ INSERT INTO biblioteca_exercicios (categoria, nome, video_url, reps) VALUES
 ('ÚMERO ANTERIORIZADO', 'Autoliberação do Serrátil Anterior', 'https://youtu.be/QPmVeq-4k9A', '2X 18 repetições para cada lado'),
 ('ÚMERO ANTERIORIZADO', 'Autoliberação do Peitoral com Rotação', 'https://youtu.be/grwt4OWT1Lg', '2X 14 repetições'),
 
--- PELVE ANTERIOR
+-- PELVE INCLINADA ANTERIORMENTE EM RELAÇÃO AO FEMUR
 ('PELVE INCLINADA ANTERIORMENTE EM RELAÇÃO AO FEMUR', 'Fortalecimento Para os Glúteos', 'https://youtu.be/3MdZmPCUFx0', '2X 16 repetições para cada lado'),
 ('PELVE INCLINADA ANTERIORMENTE EM RELAÇÃO AO FEMUR', 'Estabilidade Lombar', 'https://youtu.be/pVwVeGDi4kY', '2X 10 repetições para cada lado'),
 ('PELVE INCLINADA ANTERIORMENTE EM RELAÇÃO AO FEMUR', 'Elasticidade para Piriforme', 'https://youtu.be/VHzrfXBiaSo', '2X 16 repetições para cada lado'),
 ('PELVE INCLINADA ANTERIORMENTE EM RELAÇÃO AO FEMUR', 'Elasticidade para quadríceps', 'https://youtu.be/j6R44TZZfpw', '2X 16 repetições para cada lado'),
 
--- PELVE POSTERIOR
+-- PELVE INCLINADA POSTERIORMENTE EM RELAÇÃO AO FEMUR
 ('PELVE INCLINADA POSTERIORMENTE EM RELAÇÃO AO FEMUR', 'Abraçar Joelho Alternado', 'https://youtu.be/ob8dq-31S2o', '2X 16 repetições'),
 ('PELVE INCLINADA POSTERIORMENTE EM RELAÇÃO AO FEMUR', 'Flexão de Quadril', 'https://youtu.be/I4r7iOavmAA', '2X 16 repetições para cada lado'),
 ('PELVE INCLINADA POSTERIORMENTE EM RELAÇÃO AO FEMUR', 'Mobilidade GOC', 'https://youtu.be/V_KLjtsEx0M', '2X 16 repetições para cada lado'),
 ('PELVE INCLINADA POSTERIORMENTE EM RELAÇÃO AO FEMUR', 'Agachamento Isométrico na Parede', 'https://youtu.be/ZWzDvosYakA', '2X 20 segundos'),
 
--- TESTE QUADRADO LOMBAR - NÃO DESCE
+-- ÂNGULO MAIOR QUE 90º ENTRE TÍBIA E PÉ
+('ÂNGULO MAIOR QUE 90º ENTRE TÍBIA E PÉ', 'Mobilidade TFL', 'https://youtu.be/bfd0QVxP9Is', '2X 16 repetições para cada lado'),
+('ÂNGULO MAIOR QUE 90º ENTRE TÍBIA E PÉ', 'Balanço para Tornozelo', 'https://youtu.be/IVcua4JDuDA', '2X 16 repetições para cada lado'),
+('ÂNGULO MAIOR QUE 90º ENTRE TÍBIA E PÉ', 'Autoliberação dos Fibulares', 'https://youtu.be/5e9SJnUWfzg', '2X 10 repetições (ciclo) para cada lado'),
+('ÂNGULO MAIOR QUE 90º ENTRE TÍBIA E PÉ', 'Alongamento dos Fibulares', 'https://youtu.be/UvEEkZWfJrI', '2X 20 segundos para cada lado'),
+
+-- TESTE DE QUADRADO LOMBAR – PELVE NÃO DESCE
 ('TESTE DE QUADRADO LOMBAR – PELVE NÃO DESCE', 'Elasticidade da Cadeia Lateral', 'https://youtu.be/Qo2ttMoPjpM', '2X 18 repetições para cada lado'),
 ('TESTE DE QUADRADO LOMBAR – PELVE NÃO DESCE', 'Elasticidade para Quadrado Lombar', 'https://youtu.be/TnA03HUKRYI', '2X 16 repetições para cada lado'),
 ('TESTE DE QUADRADO LOMBAR – PELVE NÃO DESCE', 'Alcance Cruzado', 'https://youtu.be/Vb0UGxL_Mso', '2X 14 repetições para cada lado'),
 ('TESTE DE QUADRADO LOMBAR – PELVE NÃO DESCE', 'Desnivelamento Pélvico', 'https://youtu.be/WfVDQlnI4Kw', '2X 20 repetições'),
 
--- UMBIGO NÃO ACOMPANHA
+-- TESTE DE QUADRADO LOMBAR – PELVE NÃO DESCE E AINDA GIRA
+('TESTE DE QUADRADO LOMBAR – PELVE NÃO DESCE E AINDA GIRA', 'Elasticidade da Cadeia Lateral', 'https://youtu.be/Qo2ttMoPjpM', '2X 18 repetições para cada lado'),
+('TESTE DE QUADRADO LOMBAR – PELVE NÃO DESCE E AINDA GIRA', 'Elasticidade para Quadrado Lombar', 'https://youtu.be/TnA03HUKRYI', '2X 16 repetições para cada lado'),
+('TESTE DE QUADRADO LOMBAR – PELVE NÃO DESCE E AINDA GIRA', 'Balanço da Marcha', 'https://youtu.be/L7qY_QQm8gc', '2X 16 repetições para cada lado'),
+('TESTE DE QUADRADO LOMBAR – PELVE NÃO DESCE E AINDA GIRA', 'Desnivelamento Pélvico', 'https://youtu.be/WfVDQlnI4Kw', '2X 20 repetições'),
+
+-- TESTE DE QUADRADO LOMBAR – PELVE DESCE, MAS GIRA
+('TESTE DE QUADRADO LOMBAR – PELVE DESCE, MAS GIRA', 'Elasticidade para piriforme', 'https://youtu.be/VHzrfXBiaSo', '2X 16 repetições para cada lado'),
+('TESTE DE QUADRADO LOMBAR – PELVE DESCE, MAS GIRA', 'Elasticidade para Quadrado Lombar', 'https://youtu.be/TnA03HUKRYI', '2X 16 repetições para cada lado'),
+('TESTE DE QUADRADO LOMBAR – PELVE DESCE, MAS GIRA', 'Balanço da Marcha', 'https://youtu.be/L7qY_QQm8gc', '2X 16 repetições para cada lado'),
+('TESTE DE QUADRADO LOMBAR – PELVE DESCE, MAS GIRA', 'Desnivelamento Pélvico', 'https://youtu.be/WfVDQlnI4Kw', '2X 20 repetições'),
+
+-- TESTE DE ADUTORES - CARGA EM UM JOELHO E UMBIGO SAI DO CENTRO
+('TESTE DE ADUTORES - CARGA EM UM JOELHO E UMBIGO SAI DO CENTRO', 'Planador', 'https://youtu.be/TjjLaRRVPls', '2X 20 segundos para cada lado'),
+('TESTE DE ADUTORES - CARGA EM UM JOELHO E UMBIGO SAI DO CENTRO', 'Dissociação de Adutores', 'https://youtu.be/zds4l12L3Ys', '2X 16 repetições para cada lado'),
+('TESTE DE ADUTORES - CARGA EM UM JOELHO E UMBIGO SAI DO CENTRO', 'Afastamento dos Joelhos', 'https://youtu.be/44PRvRZDxjc', '2X 16 repetições para cada lado'),
+('TESTE DE ADUTORES - CARGA EM UM JOELHO E UMBIGO SAI DO CENTRO', 'Esfinge', 'https://youtu.be/1ijlpffMZkg', '2X 12 repetições'),
+
+-- TESTE DE ADUTORES - CARGA NO JOELHO, UMBIGO SAI DO CENTRO E TRONCO VAI A FRENTE
+('TESTE DE ADUTORES - CARGA NO JOELHO, UMBIGO SAI DO CENTRO E TRONCO VAI A FRENTE', 'Planador', 'https://youtu.be/TjjLaRRVPls', '2X 20 segundos para cada lado'),
+('TESTE DE ADUTORES - CARGA NO JOELHO, UMBIGO SAI DO CENTRO E TRONCO VAI A FRENTE', 'Dissociação de Adutores', 'https://youtu.be/zds4l12L3Ys', '2X 16 repetições para cada lado'),
+('TESTE DE ADUTORES - CARGA NO JOELHO, UMBIGO SAI DO CENTRO E TRONCO VAI A FRENTE', 'Afastamento dos Joelhos', 'https://youtu.be/44PRvRZDxjc', '2X 16 repetições para cada lado'),
+('TESTE DE ADUTORES - CARGA NO JOELHO, UMBIGO SAI DO CENTRO E TRONCO VAI A FRENTE', 'Esfinge', 'https://youtu.be/1ijlpffMZkg', '2X 12 repetições'),
+
+-- TESTE DE ADUTORES - CARGA NO JOELHO, UMBIGO SAI DO CENTRO E TRONCO VAI P/ POSTERIOR
+('TESTE DE ADUTORES - CARGA NO JOELHO, UMBIGO SAI DO CENTRO E TRONCO VAI P/ POSTERIOR', 'Planador', 'https://youtu.be/TjjLaRRVPls', '2X 20 segundos para cada lado'),
+('TESTE DE ADUTORES - CARGA NO JOELHO, UMBIGO SAI DO CENTRO E TRONCO VAI P/ POSTERIOR', 'Dissociação de Adutores', 'https://youtu.be/zds4l12L3Ys', '2X 16 repetições para cada lado'),
+('TESTE DE ADUTORES - CARGA NO JOELHO, UMBIGO SAI DO CENTRO E TRONCO VAI P/ POSTERIOR', 'Afastamento dos Joelhos', 'https://youtu.be/44PRvRZDxjc', '2X 16 repetições para cada lado'),
+('TESTE DE ADUTORES - CARGA NO JOELHO, UMBIGO SAI DO CENTRO E TRONCO VAI P/ POSTERIOR', 'Esfinge', 'https://youtu.be/1ijlpffMZkg', '2X 12 repetições'),
+
+-- BATE A PORTA DO CARRO P/ UM DOS LADOS E A PELVE GIRA OU O TRONCO INCLINA
+('BATE A PORTA DO CARRO P/ UM DOS LADOS E A PELVE GIRA OU O TRONCO INCLINA', 'Planador', 'https://youtu.be/TjjLaRRVPls', '2X 20 segundos para cada lado'),
+('BATE A PORTA DO CARRO P/ UM DOS LADOS E A PELVE GIRA OU O TRONCO INCLINA', 'Mobilidade TFL', 'https://youtu.be/bfd0QVxP9Is', '2X 16 repetições para cada lado'),
+('BATE A PORTA DO CARRO P/ UM DOS LADOS E A PELVE GIRA OU O TRONCO INCLINA', 'Deslocamento Pélvico Lateral', 'https://youtu.be/FdxqZa1nCdU', '2X 20 segundos para cada lado'),
+('BATE A PORTA DO CARRO P/ UM DOS LADOS E A PELVE GIRA OU O TRONCO INCLINA', 'Esfinge', 'https://youtu.be/1ijlpffMZkg', '2X 12 repetições'),
+
+-- UMBIGO NÃO ACOMPANHA O GIRO DO TRONCO
 ('UMBIGO NÃO ACOMPANHA O GIRO DO TRONCO', 'Equilíbrio Contralateral', 'https://youtu.be/PPhNACpOGH8', '2X 30 segundos para cada lado'),
 ('UMBIGO NÃO ACOMPANHA O GIRO DO TRONCO', 'Rotação Contralateral', 'https://youtu.be/b6nSXnDgDrw', '2X 24 repetições'),
 ('UMBIGO NÃO ACOMPANHA O GIRO DO TRONCO', 'Cotovelo Para a Coxa', 'https://youtu.be/fHf8PgpPG_k', '2X 12 repetições para cada lado'),
 ('UMBIGO NÃO ACOMPANHA O GIRO DO TRONCO', 'Subida no Degrau com Rotação', 'https://youtu.be/NqV5OCW-NIo', '2X 12 repetições para cada lado'),
 
--- COSTELA NÃO ABRE / RESPIRAÇÃO PARADOXAL (Compartilham os mesmos exercícios na sua lista)
+-- TÍBIA NÃO VAI PARA DORSIFLEXÃO
+('TÍBIA NÃO VAI PARA DORSIFLEXÃO', 'Mobilidade TFL', 'https://youtu.be/bfd0QVxP9Is', '2X 16 repetições para cada lado'),
+('TÍBIA NÃO VAI PARA DORSIFLEXÃO', 'Balanço para Tornozelo', 'https://youtu.be/IVcua4JDuDA', '2X 16 repetições para cada lado'),
+('TÍBIA NÃO VAI PARA DORSIFLEXÃO', 'Autoliberação dos Fibulares', 'https://youtu.be/5e9SJnUWfzg', '2X 10 repetições (ciclo) para cada lado'),
+('TÍBIA NÃO VAI PARA DORSIFLEXÃO', 'Alongamento dos Fibulares', 'https://youtu.be/UvEEkZWfJrI', '2X 20 segundos para cada lado'),
+
+-- PÉ NÃO PRONA
+('PÉ NÃO PRONA', 'Mobilidade em Dorsiflexão', 'https://youtu.be/1XN8qntLZY8', '2X 16 repetições para cada lado'),
+('PÉ NÃO PRONA', 'Mobilidade de Tornozelo Frente a Parede', 'https://youtu.be/PZTJ1QdkL7M', '2X 16 repetições para cada lado'),
+('PÉ NÃO PRONA', 'Joelho ao Hálux', 'https://youtu.be/ERSnwnPYp5o', '2X 16 repetições para cada lado'),
+('PÉ NÃO PRONA', 'Autoliberação do Tibial Anterior', 'https://youtu.be/6Hp2hxlJemY', '2X 18 repetições para cada lado'),
+
+-- PÉ NÃO SUPINA
+('PÉ NÃO SUPINA', 'Caminhada Frontal nos Calcanhares', 'https://youtu.be/vzHktXCUsro', '2X 14 repetições'),
+('PÉ NÃO SUPINA', 'Joelho ao Hálux', 'https://youtu.be/ERSnwnPYp5o', '2X 16 repetições para cada lado'),
+('PÉ NÃO SUPINA', 'Elasticidade para o TFL', 'https://youtu.be/feL6n_Voejw', '2X 18 repetições para cada lado'),
+('PÉ NÃO SUPINA', 'Alongamento Para Panturrilha', 'https://youtu.be/l_FrFliCB90', '2X 20 segundos para cada lado'),
+
+-- TIBIA/TORNOZELO RODA PARA MEDIAL
+('TIBIA/TORNOZELO RODA PARA MEDIAL', 'Abraçar Joelho Alternado', 'https://youtu.be/ob8dq-31S2o', '2X 16 repetições'),
+('TIBIA/TORNOZELO RODA PARA MEDIAL', 'Flexão de Quadril', 'https://youtu.be/I4r7iOavmAA', '2X 16 repetições para cada lado'),
+('TIBIA/TORNOZELO RODA PARA MEDIAL', 'Mobilidade GOC', 'https://youtu.be/V_KLjtsEx0M', '2X 16 repetições para cada lado'),
+('TIBIA/TORNOZELO RODA PARA MEDIAL', 'Agachamento Isométrico na Parede', 'https://youtu.be/ZWzDvosYakA', '2X 20 segundos'),
+
+-- TIBIA/TORNOZELO RODA PARA LATERAL
+('TIBIA/TORNOZELO RODA PARA LATERAL', 'Abraçar Joelho Alternado', 'https://youtu.be/ob8dq-31S2o', '2X 16 repetições'),
+('TIBIA/TORNOZELO RODA PARA LATERAL', 'Flexão de Quadril', 'https://youtu.be/I4r7iOavmAA', '2X 16 repetições para cada lado'),
+('TIBIA/TORNOZELO RODA PARA LATERAL', 'Mobilidade GOC', 'https://youtu.be/V_KLjtsEx0M', '2X 16 repetições para cada lado'),
+('TIBIA/TORNOZELO RODA PARA LATERAL', 'Agachamento Isométrico na Parede', 'https://youtu.be/ZWzDvosYakA', '2X 20 segundos'),
+
+-- NÃO VAI PARA ANTE
+('NÃO VAI PARA ANTE', 'Fortalecimento Para os Glúteos', 'https://youtu.be/3MdZmPCUFx0', '2X 16 repetições para cada lado'),
+('NÃO VAI PARA ANTE', 'Estabilidade Lombar', 'https://youtu.be/pVwVeGDi4kY', '2X 10 repetições para cada lado'),
+('NÃO VAI PARA ANTE', 'Elasticidade para Piriforme', 'https://youtu.be/VHzrfXBiaSo', '2X 16 repetições para cada lado'),
+('NÃO VAI PARA ANTE', 'Elasticidade para quadríceps', 'https://youtu.be/j6R44TZZfpw', '2X 16 repetições para cada lado'),
+
+-- NÃO VAI PARA RETRO
+('NÃO VAI PARA RETRO', 'Abraçar Joelho Alternado', 'https://youtu.be/ob8dq-31S2o', '2X 16 repetições'),
+('NÃO VAI PARA RETRO', 'Flexão de Quadril', 'https://youtu.be/I4r7iOavmAA', '2X 16 repetições para cada lado'),
+('NÃO VAI PARA RETRO', 'Mobilidade GOC', 'https://youtu.be/V_KLjtsEx0M', '2X 16 repetições para cada lado'),
+('NÃO VAI PARA RETRO', 'Agachamento Isométrico na Parede', 'https://youtu.be/ZWzDvosYakA', '2X 20 segundos'),
+
+-- COSTELA NÃO ABRE
 ('COSTELA NÃO ABRE', 'Deslocamento Pélvico Lateral', 'https://youtu.be/FdxqZa1nCdU', '2X 20 segundos para cada lado'),
 ('COSTELA NÃO ABRE', 'Inclinação em Semi Joelho', 'https://youtu.be/09mOaaOltZ4', '2X 16 repetições para cada lado'),
 ('COSTELA NÃO ABRE', 'Autoliberação do Diafragma', 'https://youtu.be/BTswHzXUXXw', '2X 14 repetições para cada lado'),
 ('COSTELA NÃO ABRE', 'Ciclo Respiratório', 'https://youtu.be/IFfugNVL80g', '2X 14 repetições'),
 
+-- RESPIRAÇÃO PARADOXAL
 ('RESPIRAÇÃO PARADOXAL', 'Deslocamento Pélvico Lateral', 'https://youtu.be/FdxqZa1nCdU', '2X 20 segundos para cada lado'),
 ('RESPIRAÇÃO PARADOXAL', 'Inclinação em Semi Joelho', 'https://youtu.be/09mOaaOltZ4', '2X 16 repetições para cada lado'),
 ('RESPIRAÇÃO PARADOXAL', 'Autoliberação do Diafragma', 'https://youtu.be/BTswHzXUXXw', '2X 14 repetições para cada lado'),
