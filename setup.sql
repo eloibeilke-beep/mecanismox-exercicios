@@ -1,10 +1,11 @@
 -- 0. Garantir que a extensão para IDs (UUID) esteja ativa
--- 0. Garantir extensões necessárias
+-- 0. Garantir extensoes necessarias
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- 1. Tabela de Pacientes (Fundamental para as outras)
 CREATE TABLE IF NOT EXISTS pacientes (
-  id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   nome text NOT NULL,
   numero text NOT NULL,
   created_at timestamptz DEFAULT now() NOT NULL
@@ -12,18 +13,18 @@ CREATE TABLE IF NOT EXISTS pacientes (
 
 -- 2. Tabela de Histórico (Registra o que foi enviado para cada paciente)
 CREATE TABLE IF NOT EXISTS historico (
-  id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   paciente_id uuid REFERENCES pacientes(id) ON DELETE CASCADE,
   aberrancia text,
-  exercicios text[], 
+  exercicios text[],
   created_at timestamptz DEFAULT now() NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_historico_paciente_id ON historico(paciente_id);
 
 -- Tabela para armazenar as credenciais do Gateway de WhatsApp (Evolution API / Z-API)
 CREATE TABLE IF NOT EXISTS configuracoes_venda (
-  id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  user_id uuid default auth.uid(), -- Vinculado ao usuário autenticado
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid DEFAULT auth.uid(), -- Vinculado ao usuario autenticado
   gateway_url text, -- Ex: https://sua-api.com
   gateway_key text, -- Token da API
   instancia_id text, -- Nome da instância conectada
@@ -32,7 +33,7 @@ CREATE TABLE IF NOT EXISTS configuracoes_venda (
 
 -- Tabela de Logs (Ajustada para bater com o nome usado no script.js)
 CREATE TABLE IF NOT EXISTS logs_envios (
-  id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   paciente_id uuid REFERENCES pacientes(id) ON DELETE CASCADE,
   tipo_mensagem text, 
   status text,        
@@ -43,10 +44,10 @@ CREATE INDEX IF NOT EXISTS idx_logs_paciente_id ON logs_envios(paciente_id);
 
 -- Cria a tabela da Biblioteca de Exercícios
 CREATE TABLE IF NOT EXISTS biblioteca_exercicios (
-  id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  categoria text not null,
-  nome text not null,
-  video_url text not null,
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  categoria text NOT NULL,
+  nome text NOT NULL,
+  video_url text NOT NULL,
   reps text,
   created_at timestamptz DEFAULT now() NOT NULL
 );
@@ -113,11 +114,11 @@ INSERT INTO biblioteca_exercicios (categoria, nome, video_url, reps) VALUES
 ('QUEIXO ELEVADO', 'Autoliberação dos Eretores Cervicais', 'https://youtu.be/O9WoNApOCNE', '2X 14 repetições'),
 ('QUEIXO ELEVADO', 'Autoliberação dos Peitorais', 'https://youtu.be/neez2X837Q4', '2X 10 repetições'),
 
--- CLAVÍCULA COM PERNA DE “V”
-('CLAVÍCULA COM PERNA DE “V”', 'Direção Joelho - Hálux', 'https://youtu.be/D1sdwwgModo', '2X 16 repetições para cada lado'),
-('CLAVÍCULA COM PERNA DE “V”', 'Rotação à posterior dos Ombros', 'https://youtu.be/vzD-83Jtzeo', '2X 16 repetições'),
-('CLAVÍCULA COM PERNA DE “V”', 'Expansão Respiratória', 'https://youtu.be/Iq34QAvrn6Q', '2X 10 repetições'),
-('CLAVÍCULA COM PERNA DE “V”', 'Autoliberação do Trapézio', 'https://youtu.be/Lv9G2zqSsZY', '2X 16 repetições'),
+-- CLAVICULA COM PERNA DE "V"
+('CLAVICULA COM PERNA DE "V"', 'Direção Joelho - Hálux', 'https://youtu.be/D1sdwwgModo', '2X 16 repetições para cada lado'),
+('CLAVICULA COM PERNA DE "V"', 'Rotação à posterior dos Ombros', 'https://youtu.be/vzD-83Jtzeo', '2X 16 repetições'),
+('CLAVICULA COM PERNA DE "V"', 'Expansão Respiratória', 'https://youtu.be/Iq34QAvrn6Q', '2X 10 repetições'),
+('CLAVICULA COM PERNA DE "V"', 'Autoliberação do Trapézio', 'https://youtu.be/Lv9G2zqSsZY', '2X 16 repetições'),
 
 -- BIGODE DO UMBIGO
 ('BIGODE DO UMBIGO', 'Balanço da Marcha', 'https://youtu.be/L7qY_QQm8gc', '2X 16 repetições para cada lado'),
@@ -180,11 +181,11 @@ INSERT INTO biblioteca_exercicios (categoria, nome, video_url, reps) VALUES
 ('MÃO VOLTADA P/ FRENTE OU PESSOA QUE FORÇA O TÓRAX PARA TRÁS', 'Prancha Frontal', 'https://youtu.be/LeMBR_GMFrM', '2X 25 segundos'),
 ('MÃO VOLTADA P/ FRENTE OU PESSOA QUE FORÇA O TÓRAX PARA TRÁS', 'Protração Escapular Unilateral', 'https://youtu.be/Xx6w7bw02VA', '2X 16 repetições para cada lado'),
 
--- “C” DA COLUNA ABERTO PARA...
-('“C” DA COLUNA ABERTO PARA...', 'Perdigueiro', 'https://youtu.be/yUeWN3rktWY', '2X 20 segundos para cada lado'),
-('“C” DA COLUNA ABERTO PARA...', 'Dissociação Escapular', 'https://youtu.be/2b4rhCKkETo', '2X 16 repetições'),
-('“C” DA COLUNA ABERTO PARA...', 'Extensão de Paravertebrais', 'https://youtu.be/tpr96uCilU8', '2X 16 repetições'),
-('“C” DA COLUNA ABERTO PARA...', 'Mobilidade Escapular na Parede', 'https://youtu.be/V_YWeCFjamE', '2X 16 repetições'),
+-- "C" DA COLUNA ABERTO PARA...
+('"C" DA COLUNA ABERTO PARA...', 'Perdigueiro', 'https://youtu.be/yUeWN3rktWY', '2X 20 segundos para cada lado'),
+('"C" DA COLUNA ABERTO PARA...', 'Dissociação Escapular', 'https://youtu.be/2b4rhCKkETo', '2X 16 repetições'),
+('"C" DA COLUNA ABERTO PARA...', 'Extensão de Paravertebrais', 'https://youtu.be/tpr96uCilU8', '2X 16 repetições'),
+('"C" DA COLUNA ABERTO PARA...', 'Mobilidade Escapular na Parede', 'https://youtu.be/V_YWeCFjamE', '2X 16 repetições'),
 
 -- CABEÇA ANTERIORIZADA LADO...
 ('CABEÇA ANTERIORIZADA LADO...', 'Elevação Com Cotovelos Unidos', 'https://youtu.be/NV3bbu-fAYI', '2X 14 repetições'),
