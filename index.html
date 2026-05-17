@@ -7,6 +7,10 @@
     <title>Mecanismox-exercícios</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
+      * {
+        box-sizing: border-box;
+      }
+
       :root {
         --primary: #2563eb;
         --primary-hover: #1d4ed8;
@@ -38,6 +42,25 @@
         flex-direction: column;
         gap: 12px;
         box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      }
+
+      .config-section {
+        margin-top: auto;
+        border-top: 1px solid #334155;
+        padding-top: 15px;
+      }
+      .config-section h3 {
+        font-size: 0.8rem;
+        color: #94a3b8;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+      .config-content {
+        display: none;
+        flex-direction: column;
+        gap: 8px;
       }
 
       .sidebar h2 {
@@ -94,6 +117,15 @@
         margin-top: 0;
         color: var(--sidebar-bg);
         font-weight: 800;
+      }
+
+      #temporizador-container {
+        display: none;
+        background: var(--warning);
+        color: white;
+        padding: 10px;
+        text-align: center;
+        font-weight: bold;
       }
 
       .box-mensagem {
@@ -244,6 +276,18 @@
       />
 
       <div id="listaPacientes"></div>
+
+      <div class="config-section">
+        <h3 onclick="const el = document.getElementById('configContent'); el.style.display = el.style.display === 'flex' ? 'none' : 'flex'">
+          ⚙️ Configurações API <span>▼</span>
+        </h3>
+        <div id="configContent" class="config-content">
+          <input type="text" id="cfgUrl" placeholder="URL da API (Ex: https://...)" />
+          <input type="text" id="cfgKey" placeholder="Global API Key / Token" />
+          <input type="text" id="cfgInstancia" placeholder="Nome da Instância" />
+          <button onclick="salvarConfiguracoes()" style="background-color: var(--primary); color: white; font-size: 12px; padding: 8px;">Salvar API</button>
+        </div>
+      </div>
     </div>
 
     <div class="main">
