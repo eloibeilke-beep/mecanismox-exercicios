@@ -148,7 +148,7 @@ INSERT INTO biblioteca_exercicios (categoria, nome, video_url, reps) VALUES
 ('ÂNGULO INFERIOR DA PATELA PARA...', 'Autoliberação da Lateral da Coxa', 'https://youtu.be/3VO3Axrm3xI', '2X 25 repetições para cada lado'),
 ('ÂNGULO INFERIOR DA PATELA PARA...', 'Caminhada nos Calcanhares', 'https://youtu.be/ZQVWy_MuTJg', '2X 8 repetições'),
 ('ÂNGULO INFERIOR DA PATELA PARA...', 'Elevação Pélvica em Isometria', 'https://youtu.be/K56XAa-jTSE', '2X de 20 segundos'),
-('ÂNGULO INFERIOR DA PATELA PARA...', 'Autoliberação do Vasto Medial (Patela Medial)', 'https://youtu.be/Qnsjca2Bze0', '2X 25 repetições para cada lado'),
+('ÂNGULO INFERIOR DA PATELA PARA...', 'Autoliberação do Vasto Medial', 'https://youtu.be/Qnsjca2Bze0', '2X 25 repetições para cada lado'),
 
 -- ARCO MEDIAL ELEVADO
 ('ARCO MEDIAL ELEVADO', 'Mobilidade em Dorsiflexão', 'https://youtu.be/1XN8qntLZY8', '2X 16 repetições para cada lado'),
