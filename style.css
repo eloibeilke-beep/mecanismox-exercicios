@@ -12,18 +12,32 @@ body {
 
 .sidebar {
   width: 280px;
+  flex-shrink: 0; /* Impede que a sidebar seja espremida pelo conteúdo principal */
+  display: flex;
+  flex-direction: column;
   background: #1f2d3d;
   color: white;
-  padding: 15px;
+  padding: 10px;
   overflow-y: auto;
+  overflow-x: hidden; /* Evita rolagem horizontal indesejada */
+}
+
+.sidebar h2 {
+  margin-top: 0;
+  font-size: 1.2rem;
+  overflow-wrap: break-word; /* Garante que o título longo não quebre o layout */
+  margin-bottom: 20px;
+  color: #ecf0f1;
 }
 
 .sidebar input,
 .sidebar select,
 .sidebar button {
+  display: block;
   width: 100%;
-  padding: 8px;
-  margin-bottom: 10px;
+  box-sizing: border-box !important;
+  padding: 10px;
+  margin: 0 0 12px 0;
   border: none;
   border-radius: 4px;
   font-size: 14px;

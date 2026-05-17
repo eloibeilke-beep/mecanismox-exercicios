@@ -1,4 +1,5 @@
 -- 0. Garantir que a extensão para IDs (UUID) esteja ativa
+-- 0. Garantir extensões necessárias
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- 1. Tabela de Pacientes (Fundamental para as outras)
@@ -14,9 +15,10 @@ CREATE TABLE IF NOT EXISTS historico (
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
   paciente_id uuid REFERENCES pacientes(id) ON DELETE CASCADE,
   aberrancia text,
-  exercicios text[], -- Armazena a lista de nomes de exercícios
+  exercicios text[], 
   created_at timestamptz DEFAULT now() NOT NULL
 );
+CREATE INDEX IF NOT EXISTS idx_historico_paciente_id ON historico(paciente_id);
 
 -- Tabela para armazenar as credenciais do Gateway de WhatsApp (Evolution API / Z-API)
 CREATE TABLE IF NOT EXISTS configuracoes_venda (
@@ -25,62 +27,65 @@ CREATE TABLE IF NOT EXISTS configuracoes_venda (
   gateway_url text, -- Ex: https://sua-api.com
   gateway_key text, -- Token da API
   instancia_id text, -- Nome da instância conectada
-  created_at timestamptz default now() not null,
-  constraint unique_config UNIQUE (id) -- Garante alvo para ON CONFLICT
+  created_at timestamptz default now() not null
 );
-
--- Habilitar RLS e permitir acesso para a tabela de configurações
-ALTER TABLE configuracoes_venda ENABLE ROW LEVEL SECURITY;
-
--- Remover políticas antigas para evitar erro de duplicata
-DROP POLICY IF EXISTS "Acesso total configuracoes" ON configuracoes_venda;
-CREATE POLICY "Acesso total configuracoes" ON configuracoes_venda FOR ALL USING (true);
-
--- Inserir uma linha inicial se a tabela estiver vazia
-INSERT INTO configuracoes_venda (id, gateway_url) 
-VALUES ('00000000-0000-0000-0000-000000000000', NULL) 
-ON CONFLICT (id) DO NOTHING;
 
 -- Tabela de Logs (Ajustada para bater com o nome usado no script.js)
 CREATE TABLE IF NOT EXISTS logs_envios (
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  paciente_id uuid references pacientes(id) on delete cascade,
-  tipo_mensagem text, -- 'video' ou 'texto'
-  status text,        -- 'sucesso', 'erro' ou 'processando'
+  paciente_id uuid REFERENCES pacientes(id) ON DELETE CASCADE,
+  tipo_mensagem text, 
+  status text,        
   detalhes text,
   created_at timestamptz default now() not null
 );
-
--- Remove a tabela se ela existir para evitar conflitos de estrutura
-DROP TABLE IF EXISTS biblioteca_exercicios;
+CREATE INDEX IF NOT EXISTS idx_logs_paciente_id ON logs_envios(paciente_id);
 
 -- Cria a tabela da Biblioteca de Exercícios
-CREATE TABLE biblioteca_exercicios (
+CREATE TABLE IF NOT EXISTS biblioteca_exercicios (
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
   categoria text not null,
   nome text not null,
   video_url text not null,
   reps text,
-  created_at timestamptz default now() not null
+  created_at timestamptz DEFAULT now() NOT NULL
 );
 
--- Habilitar RLS e permitir leitura pública para a biblioteca
+-- ==========================================
+-- CONFIGURAÇÃO DE SEGURANÇA (RLS)
+-- ==========================================
+
 ALTER TABLE pacientes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE historico ENABLE ROW LEVEL SECURITY;
+ALTER TABLE configuracoes_venda ENABLE ROW LEVEL SECURITY;
+ALTER TABLE logs_envios ENABLE ROW LEVEL SECURITY;
 ALTER TABLE biblioteca_exercicios ENABLE ROW LEVEL SECURITY;
 
--- Limpeza e criação de políticas para evitar erros
+-- Reset de Políticas para evitar erros de duplicidade ao rodar o script novamente
 DROP POLICY IF EXISTS "Leitura pública" ON biblioteca_exercicios;
-CREATE POLICY "Leitura pública" ON biblioteca_exercicios FOR SELECT USING (true);
-
 DROP POLICY IF EXISTS "Acesso total pacientes" ON pacientes;
-CREATE POLICY "Acesso total pacientes" ON pacientes FOR ALL USING (true);
-
 DROP POLICY IF EXISTS "Acesso total historico" ON historico;
+DROP POLICY IF EXISTS "Acesso total configuracoes" ON configuracoes_venda;
+DROP POLICY IF EXISTS "Inserção de logs" ON logs_envios;
+DROP POLICY IF EXISTS "Leitura de logs" ON logs_envios;
+
+CREATE POLICY "Leitura pública" ON biblioteca_exercicios FOR SELECT USING (true);
+CREATE POLICY "Acesso total pacientes" ON pacientes FOR ALL USING (true);
 CREATE POLICY "Acesso total historico" ON historico FOR ALL USING (true);
+CREATE POLICY "Acesso total configuracoes" ON configuracoes_venda FOR ALL USING (true);
+CREATE POLICY "Inserção de logs" ON logs_envios FOR INSERT WITH CHECK (true);
+CREATE POLICY "Leitura de logs" ON logs_envios FOR SELECT USING (true);
+
+-- ==========================================
+-- DADOS INICIAIS
+-- ==========================================
+
+-- Garante que exista a linha de configuração para o App encontrar
+INSERT INTO configuracoes_venda (id, gateway_url) 
+VALUES ('00000000-0000-0000-0000-000000000000', NULL) 
+ON CONFLICT (id) DO NOTHING;
 
 -- Inserir dados de exemplo para teste
--- Limpar dados antigos antes de inserir a lista completa
 TRUNCATE TABLE biblioteca_exercicios;
 
 INSERT INTO biblioteca_exercicios (categoria, nome, video_url, reps) VALUES
