@@ -458,7 +458,9 @@ async function enviarVideos() {
         const msgVideo = `🎥 *${ex.nome}*\n${ex.rep}\n\n${ex.video}`;
         const url = `whatsapp://send?phone=${paciente.numero}&text=${encodeURIComponent(msgVideo)}`;
         
-        window.open(url, "_blank");
+        // Detecta se é celular para evitar a "tela em branco"
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        window.open(url, isMobile ? "_top" : "_blank");
 
         // Se não for o último, espera 8 segundos para o usuário enviar e o navegador não bloquear
         if (index < selecionados.length - 1) {
