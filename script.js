@@ -392,7 +392,19 @@ async function enviarMensagem() {
 }
 
 // ================= ENVIAR VIDEOS =================
+// Variáveis para controle de fila manual no celular
+let filaManual = [];
+let indiceManual = 0;
+let pacienteAtualManual = null;
+let aberranciaAtualManual = "";
+
 async function enviarVideos() {
+  // Se já houver uma fila em andamento (Modo Sequencial Celular)
+  if (filaManual.length > 0) {
+    await executarProximoManual();
+    return;
+  }
+
   const selectPacientes = document.getElementById("pacientes");
   if (selectPacientes.value === "") return alert("Selecione o paciente");
 
