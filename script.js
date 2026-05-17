@@ -399,6 +399,12 @@ let pacienteAtualManual = null;
 let aberranciaAtualManual = "";
 
 async function enviarVideos() {
+  // Se já existir uma fila em andamento, apenas executa o próximo passo
+  if (filaManual.length > 0) {
+    executarProximoManual();
+    return;
+  }
+
   const selectPacientes = document.getElementById("pacientes");
   if (selectPacientes.value === "") return alert("Selecione o paciente");
 

@@ -206,4 +206,16 @@ body {
     position: relative;
     width: 100%;
   }
+
+.btn-fila-ativo {
+  background-color: #f39c12 !important; /* Cor Laranja para chamar atenção ao voltar */
+  animation: pulse-orange 1.5s infinite;
+  font-size: 1.1rem !important;
+}
+
+@keyframes pulse-orange {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
 }
