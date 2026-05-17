@@ -357,6 +357,16 @@
 
       <h3>Histórico do Paciente</h3>
       <div id="historico">Selecione um paciente para ver o histórico</div>
+
+      <div class="box-mensagem" style="margin-top: 40px; border-top: 2px solid #e2e8f0; padding-top: 20px;">
+        <h3>Gerenciar Biblioteca (Adicionar Manualmente)</h3>
+        <p style="font-size: 13px; color: #64748b; margin-bottom: 15px;">Use este formulário para adicionar novas aberrâncias ou exercícios que estejam faltando.</p>
+        <input type="text" id="libCategoria" placeholder="Aberrância (ex: QUEIXO RODADO)" style="margin-bottom: 8px;">
+        <input type="text" id="libNome" placeholder="Nome do Exercício" style="margin-bottom: 8px;">
+        <input type="text" id="libVideo" placeholder="Link do YouTube (https://youtu.be/...)" style="margin-bottom: 8px;">
+        <input type="text" id="libReps" placeholder="Repetições (ex: 2X 16 repetições)" style="margin-bottom: 12px;">
+        <button onclick="adicionarExercicioManual()" style="background-color: var(--primary); color: white; width: 100%; padding: 14px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer;">➕ Adicionar à Biblioteca</button>
+      </div>
     </div>
 
     <script src="script.js"></script>

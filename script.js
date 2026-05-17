@@ -453,51 +453,98 @@ async function enviarVideos() {
         // Espera 2 segundos entre vídeos para garantir que o WhatsApp gere o Card
         if (index < selecionados.length - 1) await delay(2000);
       }
-      
+
+      // Log no banco de dados (API)
+      await _supabase.from("logs_envios").insert([{
+        paciente_id: paciente.id,
+        tipo_mensagem: "video_multiplo",
+        status: "enviado_api"
+      }]);
+
+      await DB.addHistorico({
+        paciente_id: paciente.id,
+        aberrancia,
+        exercicios: nomesExercicios,
+      });
+      renderHistorico();
+
       alert("Protocolo enviado com sucesso via API!");
     } else {
-      // MODO MANUAL MELHORADO: Envia um por um com intervalo para garantir o vídeo/card
-      alert("Iniciando envio manual. Vou abrir os vídeos um por um para que todos apareçam com imagem. Aguarde o temporizador entre cada envio.");
-      
-      for (const [index, checkbox] of selecionados.entries()) {
-        const ex = exercicios[aberrancia][checkbox.value];
-        nomesExercicios.push(ex.nome);
-        
-        const msgVideo = `🎥 *${ex.nome}*\n${ex.rep}\n\n${ex.video}`;
-        const url = `whatsapp://send?phone=${paciente.numero}&text=${encodeURIComponent(msgVideo)}`;
-        
-        // Detecta se é celular para evitar a "tela em branco"
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        window.open(url, isMobile ? "_top" : "_blank");
+      // MODO MANUAL SEQUENCIAL (CORRIGIDO PARA CELULAR)
+      filaManual = selecionados.map(cb => exercicios[aberrancia][cb.value]);
+      indiceManual = 0;
+      pacienteAtualManual = paciente;
+      aberranciaAtualManual = aberrancia;
 
-        // Se não for o último, espera 8 segundos para o usuário enviar e o navegador não bloquear
-        if (index < selecionados.length - 1) {
-          btnOriginal.textContent = `⏳ Aguarde o próximo (${index + 2}/${selecionados.length})...`;
-          await mostrarTemporizador(8000); 
-        }
-      }
+      alert("Iniciando envio. O WhatsApp abrirá para cada vídeo. Após enviar cada um, volte aqui e clique no botão novamente.");
+      executarProximoManual();
+      return; // Interrompe para aguardar cliques manuais
     }
-
-    // Log no banco de dados
-    await _supabase.from("logs_envios").insert([{
-      paciente_id: paciente.id,
-      tipo_mensagem: "video_multiplo",
-      status: temAPI ? "enviado_api" : "enviado_manual"
-    }]);
-
-    await DB.addHistorico({
-      paciente_id: paciente.id,
-      aberrancia,
-      exercicios: nomesExercicios,
-    });
-    renderHistorico();
-
   } catch (err) {
     console.error("Erro no envio:", err);
   } finally {
-    btnOriginal.disabled = false;
-    btnOriginal.textContent = "🎥 Enviar Vídeos";
+    if (filaManual.length === 0) {
+      btnOriginal.disabled = false;
+      btnOriginal.textContent = "🎥 Enviar Vídeos";
+    }
   }
+}
+
+function executarProximoManual() {
+  const btnOriginal = document.querySelector(".btn-wa-vid");
+  const ex = filaManual[indiceManual];
+  
+  const msgVideo = `🎥 *${ex.nome}*\n${ex.rep}\n\n${ex.video}`;
+  const url = `whatsapp://send?phone=${pacienteAtualManual.numero}&text=${encodeURIComponent(msgVideo)}`;
+  
+  // No celular, usamos _top para evitar abas em branco. No PC, usamos _blank.
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  window.open(url, isMobile ? "_top" : "_blank");
+  
+  indiceManual++;
+
+  if (indiceManual < filaManual.length) {
+    btnOriginal.disabled = false;
+    btnOriginal.classList.add("btn-fila-ativo");
+    btnOriginal.textContent = `📲 ENVIAR PRÓXIMO (${indiceManual + 1}/${filaManual.length})`;
+  } else {
+    // Finalizou a fila
+    finalizarProcessoManual();
+  }
+}
+
+async function finalizarProcessoManual() {
+  const btnOriginal = document.querySelector(".btn-wa-vid");
+  btnOriginal.textContent = "✅ Tudo Enviado!";
+  btnOriginal.style.backgroundColor = "#22c55e";
+
+  const nomesExercicios = filaManual.map(e => e.nome);
+
+  try {
+    await DB.addHistorico({
+      paciente_id: pacienteAtualManual.id,
+      aberrancia: aberranciaAtualManual,
+      exercicios: nomesExercicios,
+    });
+
+    await _supabase.from("logs_envios").insert([{
+      paciente_id: pacienteAtualManual.id,
+      tipo_mensagem: "video_multiplo",
+      status: "enviado_manual_sequencial"
+    }]);
+
+    renderHistorico();
+  } catch (err) {
+    console.error("Erro ao finalizar processo manual:", err);
+  }
+
+  setTimeout(() => {
+    filaManual = [];
+    btnOriginal.textContent = "🎥 Enviar Vídeos";
+    btnOriginal.style.backgroundColor = "";
+    btnOriginal.classList.remove("btn-fila-ativo");
+    btnOriginal.disabled = false;
+  }, 3000);
 }
 
 // ================= CONFIGURAÇÕES API =================
@@ -669,3 +716,34 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   atualizarListaPacientes();
 });
+
+// ================= GERENCIAR BIBLIOTECA MANUALMENTE =================
+async function adicionarExercicioManual() {
+  const categoria = document.getElementById("libCategoria").value.trim().toUpperCase();
+  const nome = document.getElementById("libNome").value.trim();
+  const video_url = document.getElementById("libVideo").value.trim();
+  const reps = document.getElementById("libReps").value.trim();
+
+  if (!categoria || !nome || !video_url) {
+    alert("Por favor, preencha pelo menos a Aberrância, o Nome do Exercício e o Link do Vídeo.");
+    return;
+  }
+
+  const { error } = await _supabase.from("biblioteca_exercicios").insert([
+    { categoria, nome, video_url, reps }
+  ]);
+
+  if (error) {
+    alert("Erro ao salvar na biblioteca: " + error.message);
+  } else {
+    alert("Exercício '" + nome + "' adicionado com sucesso à categoria '" + categoria + "'!");
+    
+    // Limpa apenas os campos de exercício para facilitar se você for adicionar vários na mesma categoria
+    document.getElementById("libNome").value = "";
+    document.getElementById("libVideo").value = "";
+    document.getElementById("libReps").value = "";
+
+    // Recarrega a biblioteca para que o novo item apareça no select de aberrâncias imediatamente
+    await carregarBibliotecaDeExercicios();
+  }
+}
