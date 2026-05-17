@@ -12,14 +12,16 @@ body {
 
 .sidebar {
   width: 280px;
+  max-width: 100%; /* Garante que não ultrapasse a tela em celulares pequenos */
   flex-shrink: 0; /* Impede que a sidebar seja espremida pelo conteúdo principal */
   display: flex;
   flex-direction: column;
   background: #1f2d3d;
   color: white;
-  padding: 10px;
+  padding: 15px;
   overflow-y: auto;
   overflow-x: hidden; /* Evita rolagem horizontal indesejada */
+  box-sizing: border-box;
 }
 
 .sidebar h2 {
@@ -34,13 +36,14 @@ body {
 .sidebar select,
 .sidebar button {
   display: block;
-  width: 100%;
+  width: 100% !important;
   box-sizing: border-box !important;
   padding: 10px;
-  margin: 0 0 12px 0;
+  margin: 0 0 10px 0;
   border: none;
   border-radius: 4px;
   font-size: 14px;
+  max-width: 100%;
 }
 
 .sidebar button {
